@@ -1,2 +1,1 @@
-# CarRent App
- Application to rent cars.
+# react-native-rent-a-car
