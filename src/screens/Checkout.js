@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, ImageBackground } from "react-native";
 import {
   doc,
   getDocs,
@@ -64,29 +64,38 @@ const CheckoutScreen = ({ navigation, route }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.infoBox}>
-        <Text style={styles.totalText}>Total:</Text>
-        <Text style={styles.totalAmount}>${calculateTotal()}</Text>
+    <ImageBackground source={{ uri: "https://images.pexels.com/photos/164634/pexels-photo-164634.jpeg?auto=compress&cs=tinysrgb&w=600" }} style={styles.backgroundImage}>
+      <View style={styles.container}>
+        <View style={styles.infoBox}>
+          <Text style={styles.totalText}>Total:</Text>
+          <Text style={styles.totalAmount}>${calculateTotal()}</Text>
+        </View>
+        <View style={styles.infoBox}>
+          <Text style={styles.carInfoText}>Car Info:</Text>
+          <Text style={styles.carDetails}>
+            {make} {model}
+          </Text>
+        </View>
+        <Pressable style={styles.confirmButton} onPress={handleConfirm}>
+          <Text style={styles.confirmButtonText}>Confirm</Text>
+        </Pressable>
       </View>
-      <View style={styles.infoBox}>
-        <Text style={styles.carInfoText}>Car Info:</Text>
-        <Text style={styles.carDetails}>
-          {make} {model}
-        </Text>
-      </View>
-      <Pressable style={styles.confirmButton} onPress={handleConfirm}>
-        <Text style={styles.confirmButtonText}>Confirm</Text>
-      </Pressable>
-    </View>
+    </ImageBackground>
   );
 };
+
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
+  },
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Adjust opacity here
   },
   infoBox: {
     marginBottom: 20,
@@ -95,29 +104,34 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 5,
+    color: "white", // Adjust text color for better visibility
   },
   totalAmount: {
     fontSize: 24,
     color: "green",
+    color: "white", // Adjust text color for better visibility
   },
   carInfoText: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 5,
+    color: "white", // Adjust text color for better visibility
   },
   carDetails: {
     fontSize: 16,
     color: "blue",
+    color: "white", // Adjust text color for better visibility
   },
   confirmButton: {
-    backgroundColor: "orange",
-    paddingVertical: 15,
+    backgroundColor: "white",
+    paddingVertical: 10,
     paddingHorizontal: 30,
+    width:"40%",
     borderRadius: 10,
   },
   confirmButtonText: {
     fontSize: 18,
-    color: "white",
+    color: "black",
     textAlign: "center",
   },
 });

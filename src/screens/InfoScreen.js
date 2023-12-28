@@ -20,16 +20,6 @@ const image_v_2 = require("../../assets/vehicles/v-2.png");
 const image_v_3 = require("../../assets/vehicles/v-3.png");
 const image_v_4 = require("../../assets/vehicles/v-4.png");
 
-// const handleRent = (vehicle, navigation) => {
-//   // Navigate to CheckoutScreen and pass the necessary data as params
-//   navigation.navigate('Checkout', {
-//     id: vehicle.id,
-//     make: vehicle.make,
-//     model: vehicle.model,
-//     price_per_day: vehicle.price_per_day,
-//   });
-// };
-
 const InfoScreen = ({ route }) => {
   const navigation = useNavigation();
   const vehicle = data.vehicles.filter(

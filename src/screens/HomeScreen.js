@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ScrollView, TextInput, TouchableOpacity } from "react-native";
-import { Image, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { collection, getDocs } from "firebase/firestore";
 
 const menu = require("../../assets/icons/menu.png");
@@ -35,112 +35,104 @@ const HomeScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.headerSection}>
-          <Image
-            source={menu}
-            resizeMode="contain"
-            style={styles.menuIconStyle}
-          />
-          <Image
-            source={face}
-            resizeMode="contain"
-            style={styles.faceIconStyle}
-          />
-        </View>
-
-        <View style={styles.titleSection}>
-          <Text style={styles.title}>Rent a Car</Text>
-        </View>
-
-        <View style={styles.searchSection}>
-          <View style={styles.searchPallet}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search a Car"
-              onChangeText={(text) => searchVehicles(text)}
+    <ScrollView style={styles.scrollView}>
+      <View style={styles.safeArea}>
+        <View style={styles.container}>
+          <View style={styles.headerSection}>
+            <Image
+              source={menu}
+              resizeMode="contain"
+              style={styles.menuIconStyle}
             />
-            <View style={styles.searchIconArea}>
-              <Image
-                source={magnifying_glass}
-                resizeMode="contain"
-                style={styles.magnifyingIconStyle}
+            <Image
+              source={face}
+              resizeMode="contain"
+              style={styles.faceIconStyle}
+            />
+          </View>
+
+          <View style={styles.titleSection}>
+            <Text style={styles.title}>Rent a Car</Text>
+          </View>
+
+          <View style={styles.searchSection}>
+            <View style={styles.searchPallet}>
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search a Car"
+                onChangeText={(text) => searchVehicles(text)}
               />
+              <View style={styles.searchIconArea}>
+                <Image
+                  source={magnifying_glass}
+                  resizeMode="contain"
+                  style={styles.magnifyingIconStyle}
+                />
+              </View>
             </View>
           </View>
-        </View>
 
-        <View style={styles.typesSection}>
-          <Text style={styles.typesTextActive}>All</Text>
-          <Text style={styles.typesText}>Suv</Text>
-          <Text style={styles.typesText}>Sedan</Text>
-          <Text style={styles.typesText}>Mpv</Text>
-          <Text style={styles.typesText}>Hatchback</Text>
-        </View>
+          <View style={styles.listSection}>
+            <Text style={styles.headText}>Most Rented</Text>
 
-        <View style={styles.listSection}>
-          <Text style={styles.headText}>Most Rented</Text>
-
-          <ScrollView>
-            {filteredVehicles.map((vehicle) => {
-              return (
-                <TouchableOpacity
-                  style={styles.element}
-                  key={vehicle.id}
-                  activeOpacity={0.8}
-                  onPress={() =>
-                    navigation.navigate("Info", { id: vehicle.id })
-                  }
-                >
-                  <View style={styles.infoArea}>
-                    <Text style={styles.infoTitle}>
-                      {vehicle.make} {vehicle.model}
+            {filteredVehicles.map((vehicle) => (
+              <TouchableOpacity
+                style={styles.element}
+                key={vehicle.id}
+                activeOpacity={0.8}
+                onPress={() =>
+                  navigation.navigate("Info", { id: vehicle.id })
+                }
+              >
+                <View style={styles.infoArea}>
+                  <Text style={styles.infoTitle}>
+                    {vehicle.make} {vehicle.model}
+                  </Text>
+                  <Text style={styles.infoSub}>
+                    {vehicle.type}-{vehicle.transmission}
+                  </Text>
+                  <Text style={styles.infoPrice}>
+                    <Text style={styles.infoAmount}>
+                      ${vehicle.price_per_day}{" "}
                     </Text>
-                    <Text style={styles.infoSub}>
-                      {vehicle.type}-{vehicle.transmission}
-                    </Text>
-                    <Text style={styles.infoPrice}>
-                      <Text style={styles.infoAmount}>
-                        ${vehicle.price_per_day}{" "}
-                      </Text>
-                      /day
-                    </Text>
-                  </View>
-                  <View style={styles.imageArea}>
-                    <Image
-                      source={getImage(vehicle.id)}
-                      resizeMode="contain"
-                      style={styles.vehicleImage}
-                    />
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+                    /day
+                  </Text>
+                </View>
+                <View style={styles.imageArea}>
+                  <Image
+                    source={getImage(vehicle.id)}
+                    resizeMode="contain"
+                    style={styles.vehicleImage}
+                  />
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
-export default HomeScreen;
-
 const styles = StyleSheet.create({
-  safeArea: {
+  scrollView: {
     flex: 1,
     backgroundColor: "#e7e7e7",
   },
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    paddingRight: 35,
-    paddingLeft: 35,
+    paddingHorizontal: 20,
+    paddingTop: 10,
   },
   headerSection: {
     height: 70,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 20,
   },
   menuIconStyle: {
     width: 30,
@@ -148,34 +140,33 @@ const styles = StyleSheet.create({
   faceIconStyle: {
     width: 40,
   },
-
   titleSection: {
-    marginTop: 15,
+    marginTop: 8,
+    marginBottom: 10,
   },
   title: {
     fontSize: 32,
     fontWeight: "600",
   },
-
   searchSection: {
     marginTop: 15,
     paddingLeft: 15,
     paddingRight: 15,
     justifyContent: "center",
+    marginBottom: 10,
   },
   searchPallet: {
     paddingLeft: 10,
     paddingRight: 10,
     flexDirection: "row",
     borderRadius: 8,
-    width: "100%",
+    width: "80%",
     height: 30,
     backgroundColor: "white",
   },
   searchInput: {
     width: 245,
     height: 30,
-
     backgroundColor: "white",
   },
   searchIconArea: {
@@ -189,10 +180,10 @@ const styles = StyleSheet.create({
     height: 24,
     marginRight: -10,
   },
-
   typesSection: {
     marginTop: 15,
     flexDirection: "row",
+    marginBottom: 10,
   },
   typesTextActive: {
     fontSize: 15,
@@ -206,21 +197,13 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#696969",
   },
-
   listSection: {
-    marginTop: 25,
+    marginTop: 10,
   },
   headText: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
-  },
-  elementPallet: {
-    marginLeft: -15,
-    paddingLeft: 15,
-    paddingRight: 15,
-    width: "100%",
-    height: 450,
   },
   element: {
     height: 100,
@@ -265,3 +248,5 @@ const styles = StyleSheet.create({
     height: "140%",
   },
 });
+
+export default HomeScreen;
