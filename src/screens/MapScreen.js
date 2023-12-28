@@ -1,93 +1,95 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons from Expo
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../config/firebase'; // Update the path as per your project structure
 
-const MapScreen = ({ navigation }) => {
-  const handleBackPress = () => {
-    navigation.goBack();
+const RentedCarsScreen = () => {
+  const [rentedCars, setRentedCars] = useState([]);
+
+  useEffect(() => {
+    fetchRentedCars();
+  }, []);
+
+  const fetchRentedCars = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'rentedCars'));
+      const cars = [];
+      querySnapshot.forEach((doc) => {
+        cars.push({ id: doc.id, ...doc.data() });
+      });
+      setRentedCars(cars);
+    } catch (error) {
+      console.error('Error fetching rented cars:', error);
+    }
   };
 
-  const renderRentalLocation = (location) => {
-    return (
-      <View key={location.id} style={styles.locationContainer}>
-        <Text style={styles.locationName}>{location.name}</Text>
-        <Text>{location.address}</Text>
-        <Text>Availability: {location.available ? 'Available' : 'Not Available'}</Text>
-        <TouchableOpacity onPress={() => handleLocationClick(location)}>
-          <Text style={styles.moreInfoText}>More Info</Text>
-        </TouchableOpacity>
-      </View>
-    );
+  const handleUnrent = async (carId) => {
+    await deleteDoc(doc(db, 'rentedCars', carId));
+    fetchRentedCars(); // Refresh the list of rented cars
   };
-
-  const handleLocationClick = (location) => {
-    // Handle click on a location, e.g., show details in a modal
-    console.log(`Clicked on ${location.name}`);
-  };
-
-  const rentalLocations = [
-    { id: 1, name: 'Airport Counter', address: 'Airport Terminal, City', available: true },
-    { id: 2, name: 'Downtown Office', address: '123 Main Street, Downtown', available: false },
-    // Add more locations as needed
-  ];
 
   return (
-    <View style={styles.container}>
-      {/* Header with Back Button */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackPress}>
-          <Ionicons name="ios-arrow-back" size={24} color="blue" style={styles.backButton} />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Rental Locations</Text>
-      </View>
-
-      <View style={styles.content}>
-        {rentalLocations.map(renderRentalLocation)}
-      </View>
-    </View>
+    <ScrollView style={styles.container}>
+      <Text style={styles.heading}>Rented Cars</Text>
+      {rentedCars.map((car) => (
+        <View key={car.id} style={styles.card}>
+          <Text style={styles.title}>{car.make} {car.model}</Text>
+          <Text style={styles.text}>Price per day: ${car.price_per_day}</Text>
+          <Text style={styles.text}>Rented Date: {car.rentedDate}</Text>
+          <TouchableOpacity style={styles.unrentButton} onPress={() => handleUnrent(car.id)}>
+            <Text style={styles.unrentButtonText}>Unrent</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e7e7e7',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
     padding: 10,
-    backgroundColor: '#fff',
   },
-  backButton: {
+  heading: {
     fontSize: 24,
-    marginRight: 10,
-  },
-  headerText: {
-    fontSize: 20,
     fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
   },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  locationContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
+  card: {
+    backgroundColor: 'white',
+    borderRadius: 8,
     padding: 15,
-    marginBottom: 15,
-    width: '80%',
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 3,
   },
-  locationName: {
+  title: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  moreInfoText: {
-    color: 'blue',
-    marginTop: 5,
+  text: {
+    fontSize: 14,
+    color: 'gray',
   },
+  unrentButton: {
+    marginTop: 10,
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 5,
+  },
+  unrentButtonText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    
+  },
+  // Additional styles can be added as needed
 });
 
-export default MapScreen;
+export default RentedCarsScreen;

@@ -34,13 +34,16 @@ const InfoScreen = ({ route }) => {
   };
 
   const handleRent = () => {
+    const compositeKey = `${vehicle.make}_${vehicle.model}_${vehicle.price_per_day}`;
     navigation.navigate("Checkout", {
-      id: vehicle.id,
+      compositeKey,
       make: vehicle.make,
       model: vehicle.model,
       price_per_day: vehicle.price_per_day,
     });
   };
+  
+  
 
   return (
     <ScrollView>

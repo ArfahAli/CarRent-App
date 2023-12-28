@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, ImageBackground } from "react-native";
-import {
-  doc,
-  getDocs,
-  query,
-  collection,
-  where,
-  deleteDoc,
-} from "firebase/firestore";
+import { doc, getDocs, query, collection, where, setDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 
 const CheckoutScreen = ({ navigation, route }) => {
@@ -15,66 +8,43 @@ const CheckoutScreen = ({ navigation, route }) => {
   const [carId, setCarId] = useState(null);
 
   useEffect(() => {
-    const fetchCarId = async () => {
-      try {
-        const carsCollection = collection(db, "cars");
-        const q = query(
-          carsCollection,
-          where("make", "==", make),
-          where("model", "==", model),
-          where("price_per_day", "==", price_per_day)
-        );
-        const querySnapshot = await getDocs(q);
-
-        if (querySnapshot.size === 1) {
-          const carDocument = querySnapshot.docs[0];
-          setCarId(carDocument.id);
-        } else {
-          console.error(
-            "Car not found or multiple cars found with the same details."
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching car ID:", error);
-      }
-    };
-
-    fetchCarId();
-  }, [make, model, price_per_day]);
-
-  const calculateTotal = () => {
-    const durationInDays = 5; // Replace with the actual duration
-    return durationInDays * price_per_day;
-  };
-
+    setCarId(route.params.compositeKey);
+  }, [route.params.compositeKey]);
+  
   const handleConfirm = async () => {
     try {
       if (!carId) {
-        console.error("Car ID is not available.");
+        console.error("Car composite key is not available.");
         return;
       }
-
-      await deleteDoc(doc(db, "cars", carId));
-
+      
+      const rentalData = {
+        make,
+        model,
+        price_per_day,
+        rentedDate: new Date().toISOString()
+      };
+  
+      await setDoc(doc(db, "rentedCars", carId), rentalData);
+  
       alert("Car rented successfully!");
       navigation.navigate("Home");
     } catch (error) {
       console.error("Error confirming rental:", error);
     }
   };
+  
 
   return (
     <ImageBackground source={{ uri: "https://images.pexels.com/photos/164634/pexels-photo-164634.jpeg?auto=compress&cs=tinysrgb&w=600" }} style={styles.backgroundImage}>
       <View style={styles.container}>
         <View style={styles.infoBox}>
           <Text style={styles.totalText}>Total:</Text>
-          <Text style={styles.totalAmount}>${calculateTotal()}</Text>
+          <Text style={styles.totalAmount}>${price_per_day * 5}</Text> {/* Assuming 5 days rental */}
         </View>
         <View style={styles.infoBox}>
           <Text style={styles.carInfoText}>Car Info:</Text>
-          <Text style={styles.carDetails}>
-            {make} {model}
-          </Text>
+          <Text style={styles.carDetails}>{make} {model}</Text>
         </View>
         <Pressable style={styles.confirmButton} onPress={handleConfirm}>
           <Text style={styles.confirmButtonText}>Confirm</Text>
@@ -95,7 +65,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Adjust opacity here
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   infoBox: {
     marginBottom: 20,
@@ -104,29 +74,27 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 5,
-    color: "white", // Adjust text color for better visibility
+    color: "white",
   },
   totalAmount: {
     fontSize: 24,
-    color: "green",
-    color: "white", // Adjust text color for better visibility
+    color: "white",
   },
   carInfoText: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 5,
-    color: "white", // Adjust text color for better visibility
+    color: "white",
   },
   carDetails: {
     fontSize: 16,
-    color: "blue",
-    color: "white", // Adjust text color for better visibility
+    color: "white",
   },
   confirmButton: {
     backgroundColor: "white",
     paddingVertical: 10,
     paddingHorizontal: 30,
-    width:"40%",
+    width: "40%",
     borderRadius: 10,
   },
   confirmButtonText: {

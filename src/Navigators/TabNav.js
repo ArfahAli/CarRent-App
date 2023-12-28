@@ -13,8 +13,8 @@ const TabNav = () => {
       <Tab.Navigator
         screenOptions={{headerShown:false}}
       >
-        <Tab.Screen name="HomeStack" component={HomeStack} />
-        <Tab.Screen name="Map" component={MapScreen} />
+        <Tab.Screen name="Home" component={HomeStack} />
+        <Tab.Screen name="Rented Cars" component={MapScreen} />
         <Tab.Screen name="Services" component={SavedScreen} />
         {/* <Tab.Screen name="Settings" component={SettingsScreen} /> */}
         <Tab.Screen name="Help Center" component={FAQScreen} />
